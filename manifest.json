@@ -36,6 +36,7 @@
         }
     },
     "permissions": [
+        "bookmarks",
         "tabs",
         "search",
         "activeTab"

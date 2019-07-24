@@ -11,21 +11,26 @@
         template: `
             <div v-show="visible" 
                 class="speedkey-launcher-overlay"
+                @click.self="hide"
                 @keyup.enter="onEnter"
                 @keyup.escape="onEscape"
                 @keyup.down="onDown"
-                @keyup.up="onUp">
+                @keyup.up="onUp"
+                @keyup.page-down="onPageDown"
+                @keyup.page-up="onPageUp">
                 <div class="speedkey-launcher-box">
                     <input ref="input"
+                        placeholder="Search"
                         class="speedkey-launcher-input"
                         v-model="searchValue">
                     </input>
-                    <ul class="speedkey-match-list"
-                        v-for="(result, index) in results">
-                        <li class="speedkey-match-list-member" :style="{ 'background-color': highlightedResult === index ? 'red' : null }">
+                    <div class="speedkey-match-list">
+                        <div v-for="(result, index) in results"
+                            @click="submit(index)"
+                            :class="{ 'speedkey-match-list-member': true, 'highlighted': highlightedResult === index }">
                             {{ result.display }}
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
             </div>`,
         data: {
@@ -40,8 +45,10 @@
             }
         },
         methods: {
-            submit() {
-                let selected = this.results[this.highlightedResult];
+            submit(index) {
+                if (!index && index !== 0) index = this.highlightedResult;
+
+                let selected = this.results[index];
 
                 if (!selected || selected.value === 'search') {
                     if (this.searchValue) {
@@ -67,7 +74,7 @@
                     this.results = res.results;
                     this.highlightedResult = 0;
                 });
-            }, 100, true),
+            }, 100, false),
             show() {
                 this.visible = true;
                 Vue.nextTick(() => {
@@ -90,6 +97,12 @@
             },
             onUp() {
                 if (this.highlightedResult > 0) this.highlightedResult--
+            },
+            onPageDown() {
+                this.highlightedResult = this.numResults > 0 ? this.numResults - 1 : 0;
+            },
+            onPageUp() {
+                this.highlightedResult = 0;
             }
         },
         watch: {

@@ -14,10 +14,44 @@
 }
 
 .speedkey-launcher-box {
+    color: #C5C5C5;
+    background-color: #252525;
     flex-direction: column;
     flex: 0 1 auto;
+    width: 400px;
+    max-width: 80vw;
+    max-height: 90vh;
+    margin: 5px;
+    box-shadow: 3px 6px 4px 0px rgba(0,0,0,0.75);
+    z-index: 9999999999999999999999999;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+.speedkey-match-list-member {
+    padding: 5px;
+}
+
+.speedkey-match-list-member:hover {
+    background-color: #2A2D2E;
+}
+
+.speedkey-match-list-member.highlighted {
+    background-color: #062F4A;
 }
 
 .speedkey-launcher-input {
+    background-color: #2A2D2E;
+    color: #C5C5C5;
+    padding: 5px;
+    width: calc(100% - 10px);
     flex: 0 1 auto;
+    outline: none;
+    border: 0px solid;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+.speedkey-launcher-input:focus {
+    outline: none;
 }
