@@ -19,7 +19,8 @@
 
     new Vue({
         template: `
-            <div v-show="visible" 
+            <transition name="fade">
+            <div v-if="visible" 
                 class="speedkey-launcher-overlay"
                 @click.self="hide"
                 @keyup.enter="onEnter"
@@ -44,7 +45,9 @@
                         </div>
                     </div>
                 </div>
-            </div>`,
+            </div>    
+            </transition>
+            `,
         data: {
             searchValue: null,
             visible: false,

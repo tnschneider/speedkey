@@ -2,8 +2,8 @@
     let fuse;
     
     async function loadBookmarks() {
-        function flatten(results, node, path) {
-            if (!node) {
+        function flatten(results, node, path, foldersToExclude) {
+            if (!node || (node.type == 'folder' && foldersToExclude.includes(node.title))) {
                 return;
             } else if (node.type == 'bookmark') {
                 results.push({
@@ -14,7 +14,7 @@
             } else if (node.type == 'folder' && node.children && node.children.length > 0) {
                 var newPath = node.id.endsWith('__') ? '' : `${path}${node.title}/`;
                 node.children.forEach(x => {
-                    flatten(results, x, newPath);
+                    flatten(results, x, newPath, foldersToExclude);
                 })
             }
             return results;
@@ -24,7 +24,7 @@
 
         let bookmarks = await browser.bookmarks.getTree();
 
-        let bookmarkResults = flatten([], bookmarks[0], '');
+        let bookmarkResults = flatten([], bookmarks[0], '', (settings.foldersToExclude || []).filter(x => x.length > 0));
 
         console.log(settings, settings.includeTopSites);
 

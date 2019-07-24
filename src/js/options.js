@@ -1,13 +1,17 @@
 function saveOptions(e) {
   e.preventDefault();
   browser.storage.local.set({
-    includeTopSites: document.querySelector("#include-top-sites").checked
+    includeTopSites: document.querySelector("#include-top-sites").checked,
+    foldersToExclude: (document.querySelector("#folders-to-exclude").value || '').split('\n')
+      .map(x => x.trim())
+      .filter(x => x.length > 0)
   });
 }
 
 function restoreOptions() {
-  browser.storage.local.get("includeTopSites").then((x) => {
+  browser.storage.local.get().then((x) => {
     document.querySelector("#include-top-sites").checked = x.includeTopSites;
+    document.querySelector("#folders-to-exclude").value = x.foldersToExclude.join('\n');
   }, (error) => {
     console.log(`Error: ${error}`);
   });
