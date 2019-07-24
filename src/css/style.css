@@ -9,60 +9,60 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0);
-    z-index: 999999999999999999999999;
+    background-color: rgba(0, 0, 0, 0.1)!important;
+    z-index: 999999999999999999999999!important;
 }
 
 .speedkey-launcher-box {
-    color: #C5C5C5;
-    background-color: #252525;
+    color: #C5C5C5!important;
+    background-color: #252525!important;
     flex-direction: column;
     flex: 0 1 auto;
-    width: 400px;
-    max-width: 80vw;
-    max-height: 90vh;
-    margin: 5px;
-    box-shadow: 3px 6px 4px 0px rgba(0,0,0,0.75);
-    z-index: 9999999999999999999999999;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
+    width: 400px!important;
+    max-width: 80vw!important;
+    max-height: 90vh!important;
+    margin: 5px!important;
+    box-shadow: 3px 6px 4px 0px rgba(0,0,0,0.75)!important;
+    z-index: 9999999999999999999999999!important;
+    font-family: Arial, Helvetica, sans-serif!important;
+    font-size: 16px!important;
 }
 
 .speedkey-match-list-member {
-    padding: 5px;
-    display: flex;
-    justify-content: space-between;
-    line-height: 24px;
+    padding: 5px!important;
+    display: flex!important;
+    justify-content: space-between!important;
+    line-height: 24px!important;
 }
 
 .speedkey-match-list-member:hover {
-    background-color: #2A2D2E;
+    background-color: #2A2D2E!important;
 }
 
 .speedkey-match-list-member.highlighted {
-    background-color: #062F4A;
+    background-color: #062F4A!important;
 }
 
 .speedkey-match-list-member img {
-    fill: #C5C5C5;
-    flex: 0 0 auto;
+    flex: 0 0 auto!important;
 }
 
 .speedkey-launcher-input {
-    background-color: #2A2D2E;
-    color: #C5C5C5;
-    padding: 5px;
-    width: calc(100% - 10px);
-    flex: 0 1 auto;
-    outline: none;
-    border: 0px solid;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
-    line-height: 18px;
-    height: 28px;
-    margin: 0;
+    background-color: #2A2D2E!important;
+    color: #C5C5C5!important;
+    padding: 5px!important;
+    width: calc(100% - 10px)!important;
+    flex: 0 1 auto!important;
+    outline: none!important;
+    border: 0px solid!important;
+    font-family: Arial, Helvetica, sans-serif!important;
+    font-size: 16px!important;
+    line-height: 18px!important;
+    height: 28px!important;
+    margin: 0!important;
+    box-sizing: content-box!important;
 }
 
 .speedkey-launcher-input:focus {
-    outline: none;
+    outline: none!important;
 }
