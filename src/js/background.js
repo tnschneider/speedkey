@@ -19,19 +19,25 @@
             }
             return results;
         }
-        
+
+        let settings = await browser.storage.local.get();
+
         let bookmarks = await browser.bookmarks.getTree();
 
         let bookmarkResults = flatten([], bookmarks[0], '');
 
-        console.log(await browser.topSites.get());
+        console.log(settings, settings.includeTopSites);
 
-        let topSitesResults = (await browser.topSites.get())
-            .map(x => ({
-                display: x.title || x.url,
-                value: x.url,
-                resultType: 'top-site'
-            }));
+        let topSitesResults = settings.includeTopSites
+            ? (await browser.topSites.get())
+                .map(x => ({
+                    display: x.title || x.url,
+                    value: x.url,
+                    resultType: 'top-site'
+                }))
+            : [];
+
+        console.log(topSitesResults);
 
         let allResults = [
             ...bookmarkResults,
@@ -108,4 +114,5 @@
     browser.bookmarks.onRemoved.addListener(() => loadBookmarks());
     browser.bookmarks.onChanged.addListener(() => loadBookmarks());
     browser.bookmarks.onMoved.addListener(() => loadBookmarks());
+    browser.storage.onChanged.addListener(() => loadBookmarks());
 })();
