@@ -10,6 +10,13 @@
     container.style.display = 'none';
     document.body.appendChild(container);
 
+    const ASSET_URLS = {
+        STAR: browser.runtime.getURL("assets/icons/star.svg"),
+        SEARCH: browser.runtime.getURL("assets/icons/search.svg"),
+        WHATSHOT: browser.runtime.getURL("assets/icons/whatshot.svg"),
+        ARROW_FORWARD: browser.runtime.getURL("assets/icons/arrow_forward.svg"),
+    }
+
     new Vue({
         template: `
             <div v-show="visible" 
@@ -42,11 +49,7 @@
             searchValue: null,
             visible: false,
             highlightedResult: 0,
-            results: [],
-            starUrl: null,
-            searchUrl: null,
-            whatshotUrl: null,
-            arrowForwardUrl: null
+            results: []
         },
         computed: {
             numResults() {
@@ -98,13 +101,13 @@
             getResultIconSrc(result) {
                 switch(result.resultType) {
                     case 'bookmark':
-                        return this.starUrl;
+                        return ASSET_URLS.STAR;
                     case 'search':
-                        return this.searchUrl;
+                        return ASSET_URLS.SEARCH;
                     case 'top-site':
-                        return this.whatshotUrl;
+                        return ASSET_URLS.WHATSHOT;
                     case 'command':
-                        return this.arrowForwardUrl;
+                        return ASSET_URLS.ARROW_FORWARD;
                 }
 
                 return '';
@@ -138,11 +141,6 @@
             }
         },
         mounted() {
-            this.starUrl = browser.runtime.getURL("assets/icons/star.svg");
-            this.searchUrl = browser.runtime.getURL("assets/icons/search.svg");
-            this.whatshotUrl = browser.runtime.getURL("assets/icons/whatshot.svg");
-            this.arrowForwardUrl = browser.runtime.getURL("assets/icons/arrow_forward.svg");
-
             browser.runtime.onMessage.addListener((message) => {
                 switch (message.action) {
                     case SPEEDKEY.ACTIONS.OPEN:
