@@ -8,7 +8,8 @@
             } else if (node.type == 'bookmark') {
                 results.push({
                     display: `${path}${(node.title || node.url)}`,
-                    value: node.url
+                    value: node.url,
+                    resultType: "bookmark"
                 });
             } else if (node.type == 'folder' && node.children && node.children.length > 0) {
                 var newPath = node.id.endsWith('__') ? '' : `${path}${node.title}/`;
@@ -23,7 +24,21 @@
 
         let bookmarkResults = flatten([], bookmarks[0], '');
 
-        fuse = new Fuse(bookmarkResults, {
+        console.log(await browser.topSites.get());
+
+        let topSitesResults = (await browser.topSites.get())
+            .map(x => ({
+                display: x.title || x.url,
+                value: x.url,
+                resultType: 'top-site'
+            }));
+
+        let allResults = [
+            ...bookmarkResults,
+            ...topSitesResults
+        ]
+
+        fuse = new Fuse(allResults, {
             shouldSort: true,
             threshold: 0.6,
             location: 0,
@@ -40,7 +55,7 @@
     function filter(searchValue) {
         var results = fuse.search(searchValue).slice(0, 10);
 
-        results.push({ display: "Search", value: "search" });
+        results.push({ display: "Search", value: "search", resultType: "search" });
 
         return results;
     }

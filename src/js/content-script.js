@@ -1,6 +1,9 @@
 (function() {
     const SPEEDKEY_CONTAINER_ELEMENT_ID = "speedkey-launcher-container";
 
+    let existingContainer = document.getElementById(SPEEDKEY_CONTAINER_ELEMENT_ID);
+    if (existingContainer) existingContainer.parentElement.removeChild(existingContainer);
+
     let container = document.createElement("div");
     container.className = SPEEDKEY_CONTAINER_ELEMENT_ID;
     container.id = SPEEDKEY_CONTAINER_ELEMENT_ID;
@@ -28,7 +31,9 @@
                         <div v-for="(result, index) in results"
                             @click="submit(index)"
                             :class="{ 'speedkey-match-list-member': true, 'highlighted': highlightedResult === index }">
-                            {{ result.display }}
+                            <div>{{ result.display }}</div>
+                            <img :src="getResultIconSrc(result)">
+                            </img>
                         </div>
                     </div>
                 </div>
@@ -37,7 +42,11 @@
             searchValue: null,
             visible: false,
             highlightedResult: 0,
-            results: []
+            results: [],
+            starUrl: null,
+            searchUrl: null,
+            whatshotUrl: null,
+            arrowForwardUrl: null
         },
         computed: {
             numResults() {
@@ -86,6 +95,20 @@
                 this.searchValue = null;
                 this.highlightedResult = 0;
             },
+            getResultIconSrc(result) {
+                switch(result.resultType) {
+                    case 'bookmark':
+                        return this.starUrl;
+                    case 'search':
+                        return this.searchUrl;
+                    case 'top-site':
+                        return this.whatshotUrl;
+                    case 'command':
+                        return this.arrowForwardUrl;
+                }
+
+                return '';
+            },
             onEnter() {
                 this.submit();
             },
@@ -115,6 +138,11 @@
             }
         },
         mounted() {
+            this.starUrl = browser.runtime.getURL("assets/icons/star.svg");
+            this.searchUrl = browser.runtime.getURL("assets/icons/search.svg");
+            this.whatshotUrl = browser.runtime.getURL("assets/icons/whatshot.svg");
+            this.arrowForwardUrl = browser.runtime.getURL("assets/icons/arrow_forward.svg");
+
             browser.runtime.onMessage.addListener((message) => {
                 switch (message.action) {
                     case SPEEDKEY.ACTIONS.OPEN:

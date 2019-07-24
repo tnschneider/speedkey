@@ -9,7 +9,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0);
     z-index: 999999999999999999999999;
 }
 
@@ -30,6 +30,9 @@
 
 .speedkey-match-list-member {
     padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    line-height: 24px;
 }
 
 .speedkey-match-list-member:hover {
@@ -38,6 +41,11 @@
 
 .speedkey-match-list-member.highlighted {
     background-color: #062F4A;
+}
+
+.speedkey-match-list-member img {
+    fill: #C5C5C5;
+    flex: 0 0 auto;
 }
 
 .speedkey-launcher-input {
@@ -50,6 +58,9 @@
     border: 0px solid;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
+    line-height: 18px;
+    height: 28px;
+    margin: 0;
 }
 
 .speedkey-launcher-input:focus {
