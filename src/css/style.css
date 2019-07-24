@@ -1,3 +1,10 @@
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .2s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+}
+
 .speedkey-launcher-overlay {
     position: fixed;
     display: flex;
@@ -9,7 +16,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.1)!important;
+    background-color: rgba(0, 0, 0, 0.2)!important;
     z-index: 999999999999999999999999!important;
 }
 
