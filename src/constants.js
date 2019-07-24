@@ -1,11 +1,9 @@
 const SPEEDKEY = {
-    KEYS: {
-        ESC: "Escape",
-        ENTER: "Enter"
-    },
     ACTIONS: {
         OPEN: "open",
-        SELECT: "select"
+        FILTER: "filter",
+        NAVIGATE: "navigate",
+        SEARCH: "search"
     },
     COMMANDS: {
         OPEN_LAUNCHER: "open-launcher"

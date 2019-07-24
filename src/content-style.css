@@ -13,6 +13,11 @@
     z-index: 999999999999999999999999;
 }
 
+.speedkey-launcher-box {
+    flex-direction: column;
+    flex: 0 1 auto;
+}
+
 .speedkey-launcher-input {
     flex: 0 1 auto;
 }

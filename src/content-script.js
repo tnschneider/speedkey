@@ -1,64 +1,114 @@
-const SPEEDKEY_OVERLAY_ELEMENT_ID = "speedkey-launcher-overlay";
-const SPEEDKEY_INPUT_ELEMENT_ID = "speedkey-launcher-input";
+(function() {
+    const SPEEDKEY_CONTAINER_ELEMENT_ID = "speedkey-launcher-container";
 
-function appendSearchBox() {
-    // create overlay
-    var launcherOverlay = document.createElement("div");
-    launcherOverlay.className = SPEEDKEY_OVERLAY_ELEMENT_ID;
-    launcherOverlay.id = SPEEDKEY_OVERLAY_ELEMENT_ID;
-    launcherOverlay.style.display = 'none';
+    let container = document.createElement("div");
+    container.className = SPEEDKEY_CONTAINER_ELEMENT_ID;
+    container.id = SPEEDKEY_CONTAINER_ELEMENT_ID;
+    container.style.display = 'none';
+    document.body.appendChild(container);
 
-    // create input
-    var launcherInput = document.createElement("input");
-    launcherInput.className = SPEEDKEY_INPUT_ELEMENT_ID;
-    launcherInput.id = SPEEDKEY_INPUT_ELEMENT_ID;
+    new Vue({
+        template: `
+            <div v-show="visible" 
+                class="speedkey-launcher-overlay"
+                @keyup.enter="onEnter"
+                @keyup.escape="onEscape"
+                @keyup.down="onDown"
+                @keyup.up="onUp">
+                <div class="speedkey-launcher-box">
+                    <input ref="input"
+                        class="speedkey-launcher-input"
+                        v-model="searchValue">
+                    </input>
+                    <ul class="speedkey-match-list"
+                        v-for="(result, index) in results">
+                        <li class="speedkey-match-list-member" :style="{ 'background-color': highlightedResult === index ? 'red' : null }">
+                            {{ result.display }}
+                        </li>
+                    </ul>
+                </div>
+            </div>`,
+        data: {
+            searchValue: null,
+            visible: false,
+            highlightedResult: 0,
+            results: []
+        },
+        computed: {
+            numResults() {
+                return this.results.length;
+            }
+        },
+        methods: {
+            submit() {
+                let selected = this.results[this.highlightedResult];
 
-    // register input key handler
-    launcherInput.addEventListener("keyup", (e) => {
-        switch (e.key) {
-            case SPEEDKEY.KEYS.ESC:
-                hideSearchBox();
-                break;
-            case SPEEDKEY.KEYS.ENTER:
+                if (!selected || selected.value === 'search') {
+                    if (this.searchValue) {
+                        browser.runtime.sendMessage({
+                            action: SPEEDKEY.ACTIONS.SEARCH,
+                            payload: this.searchValue
+                        });
+                    }
+                } else {
+                    browser.runtime.sendMessage({
+                        action: SPEEDKEY.ACTIONS.NAVIGATE,
+                        payload: selected.value
+                    });
+                }
+
+                this.hide();
+            },
+            filter: _SPEEDKEY_debounce(function() {
                 browser.runtime.sendMessage({
-                    action: SPEEDKEY.ACTIONS.SELECT,
-                    payload: document.getElementById('speedkey-launcher-input').value
+                    action: SPEEDKEY.ACTIONS.FILTER,
+                    payload: this.searchValue
+                }).then((res) => {
+                    this.results = res.results;
+                    this.highlightedResult = 0;
                 });
-                hideSearchBox();
-                break;
+            }, 100, true),
+            show() {
+                this.visible = true;
+                Vue.nextTick(() => {
+                    this.$refs.input.focus();
+                });  
+            },
+            hide() {
+                this.visible = false;
+                this.searchValue = null;
+                this.highlightedResult = 0;
+            },
+            onEnter() {
+                this.submit();
+            },
+            onEscape() {
+                this.hide();
+            },
+            onDown() {
+                if (this.highlightedResult < this.numResults - 1) this.highlightedResult++
+            },
+            onUp() {
+                if (this.highlightedResult > 0) this.highlightedResult--
+            }
+        },
+        watch: {
+            searchValue(val, prev) {
+                if (!val) {
+                    this.results = [];
+                } else if (val !== prev) {
+                    this.filter();
+                }
+            }
+        },
+        mounted() {
+            browser.runtime.onMessage.addListener((message) => {
+                switch (message.action) {
+                    case SPEEDKEY.ACTIONS.OPEN:
+                        this.show();
+                        break;
+                }
+            });
         }
-        
-    });
-    
-    // append to document
-    launcherOverlay.appendChild(launcherInput);
-    document.body.appendChild(launcherOverlay);
-}
-
-function showSearchBox() {
-    getOverlayElement().style.display = 'flex';
-}
-
-function hideSearchBox() {
-    getOverlayElement().style.display = 'none';
-}
-
-function getOverlayElement() {
-    return document.getElementById(SPEEDKEY_OVERLAY_ELEMENT_ID)
-}
-
-function getInputElement() {
-    return document.getElementById(SPEEDKEY_INPUT_ELEMENT_ID)
-}
-
-function handleMessage(request) {
-    switch (request.action) {
-        case SPEEDKEY.ACTIONS.OPEN:
-            showSearchBox();
-            break;
-    }
-}
-
-browser.runtime.onMessage.addListener(handleMessage);
-
-appendSearchBox();
+    }).$mount(`#${SPEEDKEY_CONTAINER_ELEMENT_ID}`);
+})();
