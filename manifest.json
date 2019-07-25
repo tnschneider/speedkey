@@ -12,7 +12,7 @@
         {
             "matches": ["<all_urls>"],
             "js": [
-                "node_modules/vue/dist/vue.js",
+                "lib/vue.js",
                 "src/js/debounce.js",
                 "src/js/constants.js",
                 "src/js/content-script.js"
@@ -24,7 +24,7 @@
     ],
     "background": {
         "scripts": [
-            "node_modules/fuse.js/dist/fuse.js",
+            "lib/fuse.js",
             "src/js/constants.js",
             "src/js/background.js"
         ]

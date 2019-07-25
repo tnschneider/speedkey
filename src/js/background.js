@@ -26,8 +26,6 @@
 
         let bookmarkResults = flatten([], bookmarks[0], '', (settings.foldersToExclude || []).filter(x => x.length > 0));
 
-        console.log(settings, settings.includeTopSites);
-
         let topSitesResults = settings.includeTopSites
             ? (await browser.topSites.get())
                 .map(x => ({
@@ -36,8 +34,6 @@
                     resultType: 'top-site'
                 }))
             : [];
-
-        console.log(topSitesResults);
 
         let allResults = [
             ...bookmarkResults,

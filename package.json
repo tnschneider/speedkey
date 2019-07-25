@@ -1,6 +1,13 @@
 {
+  "scripts": {
+    "postinstall": "mkdir -p lib && cp ./node_modules/vue/dist/vue.js ./lib/vue.js && cp ./node_modules/fuse.js/dist/fuse.js ./lib/fuse.js",
+    "build": "web-ext build -o",
+    "sign": "web-ext sign",
+    "run": "web-ext run"
+  },
   "dependencies": {
     "fuse.js": "^3.4.5",
-    "vue": "2.6.10"
+    "vue": "2.6.10",
+    "web-ext": "^3.1.1"
   }
 }
