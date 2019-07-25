@@ -2,6 +2,7 @@ function saveOptions(e) {
   e.preventDefault();
   browser.storage.local.set({
     includeTopSites: document.querySelector("#include-top-sites").checked,
+    switchToExistingTab: document.querySelector("#switch-to-existing-tab").checked,
     foldersToExclude: (document.querySelector("#folders-to-exclude").value || '').split('\n')
       .map(x => x.trim())
       .filter(x => x.length > 0)
@@ -11,6 +12,7 @@ function saveOptions(e) {
 function restoreOptions() {
   browser.storage.local.get().then((x) => {
     document.querySelector("#include-top-sites").checked = x.includeTopSites;
+    document.querySelector("#switch-to-existing-tab").checked = x.switchToExistingTab;
     document.querySelector("#folders-to-exclude").value = x.foldersToExclude.join('\n');
   }, (error) => {
     console.log(`Error: ${error}`);

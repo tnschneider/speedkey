@@ -13,11 +13,19 @@
           id="include-top-sites"
           name="include-top-sites">
         <label for="include-top-sites">Include Top Sites</label>
+        <p>Include a selection of your most frequently used sites as determined by Firefox.</p>
         <hr/>
-        <label for="folders-to-exclude">Folders to Exclude (put each folder name on a separate line)</label>
+        <input type="checkbox" 
+          id="switch-to-existing-tab"
+          name="switch-to-existing-tab">
+        <label for="switch-to-existing-tab">Switch to Existing Tab</label>
+        <p>If a tab is already open with the given URL, switch to it instead of opening a new tab.</p>
+        <hr/>
+        <label for="folders-to-exclude">Folders to Exclude</label>
         <textarea
           id="folders-to-exclude"
           name="folders-to-exclude"></textarea>
+        <p>A list of bookmark folders to be excluded. Place each folder name on a separate line.</p>
         <hr/>
         <button type="submit">Save</button>
       </form>

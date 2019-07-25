@@ -19,6 +19,7 @@
 
     new Vue({
         template: `
+            <div class="speedkey-launcher-container">
             <transition name="fade">
             <div v-if="visible" 
                 class="speedkey-launcher-overlay"
@@ -47,6 +48,7 @@
                 </div>
             </div>    
             </transition>
+            </div>
             `,
         data: {
             searchValue: null,

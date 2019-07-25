@@ -7,3 +7,8 @@ textarea {
     height: 10em;
     resize: none;
 }
+
+p {
+    font-style: italic;
+    font-size: 12px;
+}

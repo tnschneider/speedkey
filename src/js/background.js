@@ -1,5 +1,9 @@
 (async function() {
+    console.info('loading...');
+
     let fuse;
+
+    let settings = await browser.storage.local.get();
     
     async function loadBookmarks() {
         function flatten(results, node, path, foldersToExclude) {
@@ -19,8 +23,6 @@
             }
             return results;
         }
-
-        let settings = await browser.storage.local.get();
 
         let bookmarks = await browser.bookmarks.getTree();
 
@@ -80,9 +82,26 @@
                 });
                 break;
             case SPEEDKEY.ACTIONS.NAVIGATE:
-                browser.tabs.create({
-                    url: request.payload
-                });
+                if (settings.switchToExistingTab) {
+                    browser.tabs.query({
+                        currentWindow: true,
+                        url: `${request.payload}*`
+                    }).then(tabs => {
+                        if (tabs && tabs.length > 0) {
+                            browser.tabs.update(tabs[0].id, {
+                                active: true
+                            })
+                        } else {
+                            browser.tabs.create({
+                                url: request.payload
+                            });
+                        }
+                    })
+                } else {
+                    browser.tabs.create({
+                        url: request.payload
+                    });
+                }
                 break;
             case SPEEDKEY.ACTIONS.SEARCH:
                 browser.search.search({

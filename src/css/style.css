@@ -1,3 +1,11 @@
+.speedkey-launcher-container {
+    all: initial;
+}
+
+.speedkey-launcher-container * {
+    all: unset;
+}
+
 .fade-enter-active, .fade-leave-active {
     transition: opacity .2s;
 }
