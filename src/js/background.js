@@ -8,14 +8,11 @@ class SpeedkeyBackground {
     }
 
     async load(reloadSettings, reloadBookmarks, reloadTopSites, reloadOpenTabs) {
-        console.info('loading...');
-
         if (reloadSettings) {
             this.settings = await SpeedkeySettings.GetSettings();
         }
 
         if (reloadBookmarks && this.settings.includeBookmarks) {
-            console.info("reloading bookmarks...");
             let bookmarks = await browser.bookmarks.getTree();
             this.bookmarkResults = bookmarks.length > 0
                 ? this.flattenBookmarks([], bookmarks[0], '', (this.settings.foldersToExclude || []).filter(x => x.length > 0))
@@ -25,7 +22,6 @@ class SpeedkeyBackground {
         }
 
         if (reloadTopSites && this.settings.includeTopSites) {
-            console.info("reloading top sites...");
             this.topSitesResults = (await browser.topSites.get())
                 .map(x => ({
                     display: x.title || x.url,
@@ -37,15 +33,12 @@ class SpeedkeyBackground {
         }
 
         if (reloadOpenTabs && this.settings.includeOpenTabs) {
-            console.info("reloading open tabs...");
-            this.openTabsResults = (await browser.tabs.query({
-                currentWindow: true,
-                active: false
-            })).map(x => ({
-                display: x.title || x.url,
-                value: x.id,
-                resultType: SPEEDKEY.RESULT_TYPES.OPEN_TAB
-            }));
+            this.openTabsResults = (await browser.tabs.query({}))
+                .map(x => ({
+                    display: x.title || x.url,
+                    value: x.id,
+                    resultType: SPEEDKEY.RESULT_TYPES.OPEN_TAB
+                }));
         } else if (!this.settings.includeOpenTabs) {
             this.openTabsResults = [];
         }
@@ -56,7 +49,7 @@ class SpeedkeyBackground {
             ...this.openTabsResults
         ], {
             shouldSort: true,
-            threshold: 0.6,
+            threshold: 0.4,
             location: 0,
             distance: 100,
             maxPatternLength: 32,
@@ -66,8 +59,11 @@ class SpeedkeyBackground {
                 "value"
             ]
         });
+    }
 
-        console.info("finished loading.")
+    removeTab(tabId) {
+        this.openTabsResults = this.openTabsResults.filter(x => x.value !== tabId);
+        this.load(false, false, false, false);
     }
 
     filter(searchValue) {
@@ -108,7 +104,6 @@ class SpeedkeyBackground {
         if (this.settings.switchToExistingTab) {
             try {
                 let tabs = await browser.tabs.query({
-                    currentWindow: true,
                     url: `${to}*`
                 });
                 
@@ -187,7 +182,7 @@ class SpeedkeyBackground {
     }
 
     async init() {
-        await this.load(true, true, true);
+        await this.load(true, true, true, true);
 
         browser.commands.onCommand.addListener((command) => {
             try {
@@ -232,11 +227,9 @@ class SpeedkeyBackground {
         browser.bookmarks.onMoved.addListener(() => this.load(false, true, false, false));
 
         //tabs
-        browser.tabs.onActivated.addListener(() => this.load(false, false, false, true));
-        browser.tabs.onAttached.addListener(() => this.load(false, false, false, true));
         browser.tabs.onCreated.addListener(() => this.load(false, false, false, true));
-        browser.tabs.onDetached.addListener(() => this.load(false, false, false, true));
         browser.tabs.onUpdated.addListener(() => this.load(false, false, false, true));
+        browser.tabs.onRemoved.addListener((tabId) => this.removeTab(tabId));
     }
 }
 

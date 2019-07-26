@@ -1,8 +1,9 @@
 {
     "manifest_version": 2,
     "name": "SpeedKey",
-    "version": "1.2.0",
-    "description": "Hotkey based speed dial launcher.",
+    "version": "1.2.1",
+    "description": " Hotkey based speed dial launcher for your bookmarks and more.",
+    "author": "Terry Schneider",
     "icons": {
         "12": "assets/icons/icon12.png",
         "16": "assets/icons/icon16.png",
