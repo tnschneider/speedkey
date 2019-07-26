@@ -1,10 +1,17 @@
 {
     "manifest_version": 2,
     "name": "SpeedKey",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "Hotkey based speed dial launcher.",
     "icons": {
-        "48": "assets/icons/icon.png"
+        "12": "assets/icons/icon12.png",
+        "16": "assets/icons/icon16.png",
+        "32": "assets/icons/icon32.png",
+        "48": "assets/icons/icon48.png",
+        "64": "assets/icons/icon64.png",
+        "128": "assets/icons/icon128.png",
+        "256": "assets/icons/icon256.png",
+        "512": "assets/icons/icon512.png"
     },
     "content_security_policy": "default-src 'self';",
     "web_accessible_resources": ["assets/icons/*.svg"],
