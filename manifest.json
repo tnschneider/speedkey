@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "SpeedKey",
-    "version": "1.0",
+    "version": "1.0.1",
     "description": "Hotkey based speed dial launcher.",
     "icons": {
         "48": "assets/icons/icon.png"
@@ -26,6 +26,7 @@
         "scripts": [
             "lib/fuse.js",
             "src/js/constants.js",
+            "src/js/settings.js",
             "src/js/background.js"
         ]
     },

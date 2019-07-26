@@ -11,10 +11,10 @@
     document.body.appendChild(container);
 
     const ASSET_URLS = {
-        STAR: browser.runtime.getURL("assets/icons/star.svg"),
-        SEARCH: browser.runtime.getURL("assets/icons/search.svg"),
-        WHATSHOT: browser.runtime.getURL("assets/icons/whatshot.svg"),
-        ARROW_FORWARD: browser.runtime.getURL("assets/icons/arrow_forward.svg"),
+        [SPEEDKEY.RESULT_TYPES.BOOKMARK]: browser.runtime.getURL("assets/icons/star.svg"),
+        [SPEEDKEY.RESULT_TYPES.SEARCH]: browser.runtime.getURL("assets/icons/search.svg"),
+        [SPEEDKEY.RESULT_TYPES.TOP_SITE]: browser.runtime.getURL("assets/icons/whatshot.svg"),
+        [SPEEDKEY.RESULT_TYPES.GOTO]: browser.runtime.getURL("assets/icons/arrow_forward.svg"),
     }
 
     new Vue({
@@ -39,10 +39,10 @@
                     <div class="speedkey-match-list">
                         <div v-for="(result, index) in results"
                             @click="submit(index)"
+                            :id="getResultId(index)"
                             :class="{ 'speedkey-match-list-member': true, 'highlighted': highlightedResult === index }">
                             <div>{{ result.display }}</div>
-                            <img :src="getResultIconSrc(result)">
-                            </img>
+                            <img :src="getResultIconSrc(result)"></img>
                         </div>
                     </div>
                 </div>
@@ -67,13 +67,19 @@
 
                 let selected = this.results[index];
 
-                if (!selected || selected.value === 'search') {
+                if (!selected || selected.resultType === SPEEDKEY.RESULT_TYPES.SEARCH) {
                     if (this.searchValue) {
                         browser.runtime.sendMessage({
                             action: SPEEDKEY.ACTIONS.SEARCH,
                             payload: this.searchValue
                         });
                     }
+                } else if (selected.resultType === SPEEDKEY.RESULT_TYPES.GOTO) {
+                    browser.runtime.sendMessage({
+                        action: SPEEDKEY.ACTIONS.NAVIGATE,
+                        payload: this.searchValue,
+                        isGoto: true
+                    });
                 } else {
                     browser.runtime.sendMessage({
                         action: SPEEDKEY.ACTIONS.NAVIGATE,
@@ -104,18 +110,10 @@
                 this.highlightedResult = 0;
             },
             getResultIconSrc(result) {
-                switch(result.resultType) {
-                    case 'bookmark':
-                        return ASSET_URLS.STAR;
-                    case 'search':
-                        return ASSET_URLS.SEARCH;
-                    case 'top-site':
-                        return ASSET_URLS.WHATSHOT;
-                    case 'command':
-                        return ASSET_URLS.ARROW_FORWARD;
-                }
-
-                return '';
+                return ASSET_URLS[result.resultType] || '';
+            },
+            getResultId(index) {
+                return `result-${index}`;
             },
             onEnter() {
                 this.submit();
@@ -124,16 +122,26 @@
                 this.hide();
             },
             onDown() {
-                if (this.highlightedResult < this.numResults - 1) this.highlightedResult++
+                if (this.highlightedResult < this.numResults - 1) this.highlightedResult++;
+                this.scrollResultIntoView();
             },
             onUp() {
-                if (this.highlightedResult > 0) this.highlightedResult--
+                if (this.highlightedResult > 0) this.highlightedResult--;
+                this.scrollResultIntoView();
             },
             onPageDown() {
                 this.highlightedResult = this.numResults > 0 ? this.numResults - 1 : 0;
+                this.scrollResultIntoView();
             },
             onPageUp() {
                 this.highlightedResult = 0;
+                this.scrollResultIntoView();
+            },
+            scrollResultIntoView() {
+                document.getElementById(this.getResultId(this.highlightedResult)).scrollIntoView({
+                    block: "nearest",
+                    inline: "nearest"
+                })
             }
         },
         watch: {
