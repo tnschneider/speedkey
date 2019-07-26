@@ -18,8 +18,8 @@ function restoreOptions() {
         document.querySelector("#include-top-sites").checked = settings.includeTopSites;
         document.querySelector("#switch-to-existing-tab").checked = settings.switchToExistingTab;
         document.querySelector("#folders-to-exclude").value = settings.foldersToExclude.join('\n');
-    }, (error) => {
-        console.error(`Error: ${error}`);
+    }, (err) => {
+        console.error(err);
     });
 
     document.querySelector('#container').style.display = 'block'

@@ -1,22 +1,17 @@
-(async function() {
-    console.info('initializing...');
-
-    const settings = await browser.storage.local.get();
-
-    await new SpeedkeyBackground(settings).init();
-})();
-
-
 class SpeedkeyBackground {
-    constructor(settings) {
-        this.settings = new SpeedkeySettings(settings);
+    constructor() {
+        this.settings = {};
         this.fuse = null;
         this.bookmarkResults = [];
         this.topSitesResults = [];
     }
 
-    async load(reloadBookmarks, reloadTopSites) {
+    async load(reloadSettings, reloadBookmarks, reloadTopSites) {
         console.info('loading...');
+
+        if (reloadSettings) {
+            this.settings = new SpeedkeySettings(await browser.storage.local.get());
+        }
 
         if (reloadBookmarks && this.settings.includeBookmarks) {
             console.info("reloading bookmarks...");
@@ -24,6 +19,8 @@ class SpeedkeyBackground {
             this.bookmarkResults = bookmarks.length > 0
                 ? this.flattenBookmarks([], bookmarks[0], '', (this.settings.foldersToExclude || []).filter(x => x.length > 0))
                 : [];
+        } else if (!this.settings.includeBookmarks) {
+            this.bookmarkResults = [];
         }
 
         if (reloadTopSites && this.settings.includeTopSites) {
@@ -34,6 +31,8 @@ class SpeedkeyBackground {
                     value: x.url,
                     resultType: SPEEDKEY.RESULT_TYPES.TOP_SITE
                 }));
+        } else if (!this.settings.includeTopSites) {
+            this.topSitesResults = [];
         }
 
         this.fuse = new Fuse([
@@ -69,7 +68,7 @@ class SpeedkeyBackground {
         return results;
     }
 
-    navigate(to, isGoto) {
+    async navigate(to, isGoto) {
         if (isGoto) {
             if (this.needsSchema(to)) {
                 to = `http://${to}`;
@@ -81,10 +80,12 @@ class SpeedkeyBackground {
         }
 
         if (this.settings.switchToExistingTab) {
-            browser.tabs.query({
-                currentWindow: true,
-                url: `${to}*`
-            }).then(tabs => {
+            try {
+                let tabs = await browser.tabs.query({
+                    currentWindow: true,
+                    url: `${to}*`
+                });
+                
                 if (tabs && tabs.length > 0) {
                     browser.tabs.update(tabs[0].id, {
                         active: true
@@ -94,7 +95,9 @@ class SpeedkeyBackground {
                         url: to
                     });
                 }
-            })
+            } catch (err) {
+                console.error(err);
+            }
         } else {
             browser.tabs.create({
                 url: to
@@ -108,13 +111,17 @@ class SpeedkeyBackground {
         });
     }
 
-    sendMessageToActiveTab(message) {
-        return browser.tabs.query({
-            currentWindow: true,
-            active: true
-        }).then(x => {
-            browser.tabs.sendMessage(x[0].id, message);
-        });
+    async sendMessageToActiveTab(message) {
+        try {
+            let tabs = await browser.tabs.query({
+                currentWindow: true,
+                active: true
+            });
+            
+            browser.tabs.sendMessage(tabs[0].id, message);
+        } catch (err) {
+            console.error(err);
+        }   
     }
 
     isUrl(val) {
@@ -148,38 +155,52 @@ class SpeedkeyBackground {
     }
 
     async init() {
-        await this.load(true, true);
+        await this.load(true, true, true);
 
         browser.commands.onCommand.addListener((command) => {
-            switch (command) {
-                case SPEEDKEY.COMMANDS.OPEN_LAUNCHER:
-                    this.sendMessageToActiveTab({
-                        action: SPEEDKEY.ACTIONS.OPEN
-                    });
-                    break;
+            try {
+                switch (command) {
+                    case SPEEDKEY.COMMANDS.OPEN_LAUNCHER:
+                        this.sendMessageToActiveTab({
+                            action: SPEEDKEY.ACTIONS.OPEN
+                        });
+                        break;
+                }
+            } catch (err) {
+                console.error(err);
             }
+            
         });
 
         browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-            switch (request.action) {
-                case SPEEDKEY.ACTIONS.FILTER:
-                    sendResponse({
-                        results: this.filter(request.payload)
-                    });
-                    break;
-                case SPEEDKEY.ACTIONS.NAVIGATE:
-                    this.navigate(request.payload, request.isGoto);
-                    break;
-                case SPEEDKEY.ACTIONS.SEARCH:
-                    this.search(request.payload);
-                    break;
+            try {
+                switch (request.action) {
+                    case SPEEDKEY.ACTIONS.FILTER:
+                        sendResponse({
+                            results: this.filter(request.payload)
+                        });
+                        break;
+                    case SPEEDKEY.ACTIONS.NAVIGATE:
+                        this.navigate(request.payload, request.isGoto);
+                        break;
+                    case SPEEDKEY.ACTIONS.SEARCH:
+                        this.search(request.payload);
+                        break;
+                }
+            } catch (err) {
+                console.error(err);
             }
+            
         });
 
-        browser.bookmarks.onCreated.addListener(() => this.load(true, false));
-        browser.bookmarks.onRemoved.addListener(() => this.load(true, false));
-        browser.bookmarks.onChanged.addListener(() => this.load(true, false));
-        browser.bookmarks.onMoved.addListener(() => this.load(true, false));
-        browser.storage.onChanged.addListener(() => this.load(true, true));
+        browser.bookmarks.onCreated.addListener(() => this.load(false, true, false));
+        browser.bookmarks.onRemoved.addListener(() => this.load(false, true, false));
+        browser.bookmarks.onChanged.addListener(() => this.load(false, true, false));
+        browser.bookmarks.onMoved.addListener(() => this.load(false, true, false));
+        browser.storage.onChanged.addListener(() => this.load(true, true, true));
     }
 }
+
+(async function() {
+    await new SpeedkeyBackground().init();
+})();
