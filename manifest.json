@@ -15,7 +15,7 @@
     },
     "browser_specific_settings": {
         "gecko": {
-            "id": "53d40c16-38d4-4454-bf17-bc88a10151b2"
+            "id": "{53d40c16-38d4-4454-bf17-bc88a10151b2}"
         }
     },
     "content_security_policy": "default-src 'self';",
