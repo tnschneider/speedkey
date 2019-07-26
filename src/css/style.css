@@ -28,9 +28,9 @@
 }
 
 .speedkey-launcher-box {
+    color: #646464;
+    background-color: #f2f2f2;
     display: block;
-    color: #C5C5C5;
-    background-color: #252525;
     flex: 0 1 auto;
     width: 400px;
     max-width: 80vw;
@@ -39,6 +39,11 @@
     z-index: 9999999999999999999999999!important;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;    
+}
+
+.theme-dark .speedkey-launcher-box {
+    color: #c5c5c5;
+    background-color: #252525;
 }
 
 .speedkey-match-list {
@@ -56,11 +61,19 @@
 }
 
 .speedkey-match-list-member:hover {
-    background-color: #2A2D2E;
+    background-color: #e7e7e7;
+}
+
+.theme-dark .speedkey-match-list-member:hover {
+    background-color: #2a2d2e;
 }
 
 .speedkey-match-list-member.highlighted {
-    background-color: #062F4A;
+    background-color: #d2eafe;
+}
+
+.theme-dark .speedkey-match-list-member.highlighted {
+    background-color: #062f4a;
 }
 
 .speedkey-match-list-member img {
@@ -68,8 +81,8 @@
 }
 
 .speedkey-launcher-input {
-    background-color: #3E3E3E;
-    color: #C5C5C5;
+    background-color: #ffffff;
+    color: #646464;
     padding: 5px;
     width: calc(100% - 10px);
     flex: 0 1 auto;
@@ -81,4 +94,9 @@
     height: 28px;
     margin: 0;
     box-sizing: content-box;
+}
+
+.theme-dark .speedkey-launcher-input {
+    background-color: #3e3e3e;
+    color: #c5c5c5;
 }

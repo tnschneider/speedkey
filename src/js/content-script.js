@@ -11,11 +11,20 @@
     document.body.appendChild(container);
 
     const ASSET_URLS = {
-        [SPEEDKEY.RESULT_TYPES.BOOKMARK]: browser.runtime.getURL("assets/icons/star.svg"),
-        [SPEEDKEY.RESULT_TYPES.SEARCH]: browser.runtime.getURL("assets/icons/search.svg"),
-        [SPEEDKEY.RESULT_TYPES.TOP_SITE]: browser.runtime.getURL("assets/icons/whatshot.svg"),
-        [SPEEDKEY.RESULT_TYPES.GOTO]: browser.runtime.getURL("assets/icons/arrow_forward.svg"),
-        [SPEEDKEY.RESULT_TYPES.OPEN_TAB]: browser.runtime.getURL("assets/icons/tab.svg"),
+        THEME_LIGHT: {
+            [SPEEDKEY.RESULT_TYPES.BOOKMARK]: browser.runtime.getURL("assets/icons/star_light.svg"),
+            [SPEEDKEY.RESULT_TYPES.SEARCH]: browser.runtime.getURL("assets/icons/search_light.svg"),
+            [SPEEDKEY.RESULT_TYPES.TOP_SITE]: browser.runtime.getURL("assets/icons/whatshot_light.svg"),
+            [SPEEDKEY.RESULT_TYPES.GOTO]: browser.runtime.getURL("assets/icons/arrow_forward_light.svg"),
+            [SPEEDKEY.RESULT_TYPES.OPEN_TAB]: browser.runtime.getURL("assets/icons/tab_light.svg"),
+        },
+        THEME_DARK: {
+            [SPEEDKEY.RESULT_TYPES.BOOKMARK]: browser.runtime.getURL("assets/icons/star_dark.svg"),
+            [SPEEDKEY.RESULT_TYPES.SEARCH]: browser.runtime.getURL("assets/icons/search_dark.svg"),
+            [SPEEDKEY.RESULT_TYPES.TOP_SITE]: browser.runtime.getURL("assets/icons/whatshot_dark.svg"),
+            [SPEEDKEY.RESULT_TYPES.GOTO]: browser.runtime.getURL("assets/icons/arrow_forward_dark.svg"),
+            [SPEEDKEY.RESULT_TYPES.OPEN_TAB]: browser.runtime.getURL("assets/icons/tab_dark.svg"),
+        }
     }
 
     new Vue({
@@ -24,7 +33,11 @@
             <transition name="fade">
             <div v-if="visible" 
                 class="speedkey-launcher-overlay"
-                :class="{ 'speedkey-launcher-overlay': true, 'dark-overlay': settings.darkOverlay }"
+                :class="{ 
+                    'speedkey-launcher-overlay': true, 
+                    'dark-overlay': settings.darkOverlay,
+                    'theme-dark': settings.darkTheme
+                }"
                 @click.self="hide"
                 @keyup.enter="onEnter"
                 @keyup.escape="onEscape"
@@ -106,7 +119,8 @@
                 this.highlightedResult = 0;
             },
             getResultIconSrc(result) {
-                return ASSET_URLS[result.resultType] || '';
+                const theme = this.settings.darkTheme ? 'THEME_DARK' : 'THEME_LIGHT';
+                return ASSET_URLS[theme][result.resultType] || '';
             },
             getResultId(index) {
                 return `result-${index}`;

@@ -5,6 +5,7 @@ function saveOptions(e) {
         includeTopSites: document.querySelector("#include-top-sites").checked,
         includeOpenTabs: document.querySelector("#include-open-tabs").checked,
         switchToExistingTab: document.querySelector("#switch-to-existing-tab").checked,
+        darkTheme: document.querySelector("#dark-theme").checked,
         darkOverlay: document.querySelector("#dark-overlay").checked,
         foldersToExclude: (document.querySelector("#folders-to-exclude").value || '')
             .split('\n')
@@ -20,6 +21,7 @@ async function restoreOptions() {
     document.querySelector("#include-top-sites").checked = settings.includeTopSites;
     document.querySelector("#include-open-tabs").checked = settings.includeOpenTabs;
     document.querySelector("#switch-to-existing-tab").checked = settings.switchToExistingTab;
+    document.querySelector("#dark-theme").checked = settings.darkTheme;
     document.querySelector("#dark-overlay").checked = settings.darkOverlay;
     document.querySelector("#folders-to-exclude").value = settings.foldersToExclude.join('\n');
     
