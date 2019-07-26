@@ -1,13 +1,13 @@
 {
   "scripts": {
-    "postinstall": "mkdir -p lib && cp ./node_modules/vue/dist/vue.js ./lib/vue.js && cp ./node_modules/fuse.js/dist/fuse.js ./lib/fuse.js",
-    "build": "web-ext build -o",
-    "sign": "web-ext sign",
+    "postinstall": "(test -d lib || mkdir lib) && cp ./node_modules/vue/dist/vue.js ./lib/vue.js && cp ./node_modules/fuse.js/dist/fuse.js ./lib/fuse.js",
+    "build": "web-ext build -o --ignore-files yarn.lock",
+    "sign": "web-ext sign --ignore-files yarn.lock",
     "start": "web-ext run"
   },
   "dependencies": {
-    "fuse.js": "^3.4.5",
+    "fuse.js": "3.4.5",
     "vue": "2.6.10",
-    "web-ext": "^3.1.1"
+    "web-ext": "3.1.1"
   }
 }
