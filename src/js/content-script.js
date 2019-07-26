@@ -35,8 +35,8 @@
                 class="speedkey-launcher-overlay"
                 :class="{ 
                     'speedkey-launcher-overlay': true, 
-                    'dark-overlay': settings.darkOverlay,
-                    'theme-dark': settings.darkTheme
+                    'speedkey-dark-overlay': settings.darkOverlay,
+                    'speedkey-theme-dark': settings.darkTheme
                 }"
                 @click.self="hide"
                 @keyup.enter="onEnter"

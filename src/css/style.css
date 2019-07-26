@@ -21,9 +21,10 @@
     bottom: 0;
     left: 0;
     z-index: 999999999999999999999999!important;
+    background-color: transparent;
 }
 
-.speedkey-launcher-overlay.dark-overlay {
+.speedkey-launcher-overlay.speedkey-dark-overlay {
     background-color: rgba(0, 0, 0, 0.2);
 }
 
@@ -41,7 +42,7 @@
     font-size: 16px;    
 }
 
-.theme-dark .speedkey-launcher-box {
+.speedkey-theme-dark .speedkey-launcher-box {
     color: #c5c5c5;
     background-color: #252525;
 }
@@ -64,7 +65,7 @@
     background-color: #e7e7e7;
 }
 
-.theme-dark .speedkey-match-list-member:hover {
+.speedkey-theme-dark .speedkey-match-list-member:hover {
     background-color: #2a2d2e;
 }
 
@@ -72,7 +73,7 @@
     background-color: #d2eafe;
 }
 
-.theme-dark .speedkey-match-list-member.highlighted {
+.speedkey-theme-dark .speedkey-match-list-member.highlighted {
     background-color: #062f4a;
 }
 
@@ -96,7 +97,7 @@
     box-sizing: content-box;
 }
 
-.theme-dark .speedkey-launcher-input {
+.speedkey-theme-dark .speedkey-launcher-input {
     background-color: #3e3e3e;
     color: #c5c5c5;
 }
