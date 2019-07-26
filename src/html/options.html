@@ -8,50 +8,56 @@
   </head>
   <body>
     <div id="container">
-      <br/>
       <form>
-        <input type="checkbox" 
-          id="include-bookmarks"
-          name="include-bookmarks">
-        <label for="include-bookmarks">Include Bookmarks</label>
-        <p>Include your bookmarks.</p>
-        <hr/>
-        <input type="checkbox" 
-          id="include-top-sites"
-          name="include-top-sites">
-        <label for="include-top-sites">Include Top Sites</label>
-        <p>Include a selection of your most frequently used sites as determined by Firefox.</p>
-        <hr/>
-        <input type="checkbox" 
-          id="include-open-tabs"
-          name="include-open-tabs">
-        <label for="include-open-tabs">Include Open Tabs</label>
-        <p>Include your open tabs.</p>
-        <hr/>
-        <input type="checkbox" 
-          id="switch-to-existing-tab"
-          name="switch-to-existing-tab">
-        <label for="switch-to-existing-tab">Switch to Existing Tab</label>
-        <p>If a tab is already open with the given URL, switch to it instead of opening a new tab.</p>
-        <hr/>
-        <input type="checkbox" 
-          id="dark-theme"
-          name="dark-theme">
-        <label for="dark-theme">Dark Theme</label>
-        <p>If you use the light theme, you may want to apply the dark overlay.</p>
-        <hr/>
-        <input type="checkbox" 
-          id="dark-overlay"
-          name="dark-overlay">
-        <label for="dark-overlay">Dark Overlay</label>
-        <p>Place a dark overlay over the page when the launcher is opened.</p>
-        <hr/>
-        <label for="folders-to-exclude">Folders to Exclude</label>
-        <textarea
-          id="folders-to-exclude"
-          name="folders-to-exclude"></textarea>
-        <p>A list of bookmark folders to be excluded. Place each folder name on a separate line.</p>
-        <hr/>
+        <div class="option">
+          <input type="checkbox" 
+            id="include-bookmarks"
+            name="include-bookmarks">
+          <label for="include-bookmarks">Include Bookmarks</label>
+          <p>Include your bookmarks.</p>
+        </div>
+        <div class="option">
+          <input type="checkbox" 
+            id="include-top-sites"
+            name="include-top-sites">
+          <label for="include-top-sites">Include Top Sites</label>
+          <p>Include a selection of your most frequently used sites as determined by Firefox.</p>
+        </div>
+        <div class="option">
+          <input type="checkbox" 
+            id="include-open-tabs"
+            name="include-open-tabs">
+          <label for="include-open-tabs">Include Open Tabs</label>
+          <p>Include your open tabs.</p>
+        </div>
+        <div class="option">
+          <input type="checkbox" 
+            id="switch-to-existing-tab"
+            name="switch-to-existing-tab">
+          <label for="switch-to-existing-tab">Switch to Existing Tab</label>
+          <p>If a tab is already open with the given URL, switch to it instead of opening a new tab.</p>
+        </div>
+        <div class="option">
+          <input type="checkbox" 
+            id="dark-theme"
+            name="dark-theme">
+          <label for="dark-theme">Dark Theme</label>
+          <p>If you use the light theme, you may want to apply the dark overlay.</p>
+        </div>
+        <div class="option">
+          <input type="checkbox" 
+            id="dark-overlay"
+            name="dark-overlay">
+          <label for="dark-overlay">Dark Overlay</label>
+          <p>Place a dark overlay over the page when the launcher is opened.</p>
+        </div>
+        <div class="option">
+          <label for="folders-to-exclude"><span>Folders to Exclude</span></label>
+          <textarea
+            id="folders-to-exclude"
+            name="folders-to-exclude"></textarea>
+          <p>A list of bookmark folders to be excluded. Place each folder name on a separate line.</p>
+        </div>
         <button type="submit">Save</button>
       </form>
     </div>

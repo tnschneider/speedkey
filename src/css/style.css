@@ -37,7 +37,7 @@
     margin: 5px;
     box-shadow: 3px 6px 4px 0px rgba(0,0,0,0.75);
     z-index: 9999999999999999999999999!important;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 16px;    
 }
 
@@ -88,7 +88,7 @@
     flex: 0 1 auto;
     border: none;
     outline: none;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     line-height: 18px;
     height: 28px;
