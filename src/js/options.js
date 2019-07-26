@@ -1,9 +1,11 @@
 function saveOptions(e) {
     e.preventDefault();
-    browser.storage.local.set({
+    SpeedkeySettings.SetSettings({
         includeBookmarks: document.querySelector("#include-bookmarks").checked,
         includeTopSites: document.querySelector("#include-top-sites").checked,
+        includeOpenTabs: document.querySelector("#include-open-tabs").checked,
         switchToExistingTab: document.querySelector("#switch-to-existing-tab").checked,
+        darkOverlay: document.querySelector("#dark-overlay").checked,
         foldersToExclude: (document.querySelector("#folders-to-exclude").value || '')
             .split('\n')
             .map(x => x.trim())
@@ -11,17 +13,16 @@ function saveOptions(e) {
     });
 }
 
-function restoreOptions() {
-    browser.storage.local.get().then((x) => {
-        let settings = new SpeedkeySettings(x);
-        document.querySelector("#include-bookmarks").checked = settings.includeBookmarks;
-        document.querySelector("#include-top-sites").checked = settings.includeTopSites;
-        document.querySelector("#switch-to-existing-tab").checked = settings.switchToExistingTab;
-        document.querySelector("#folders-to-exclude").value = settings.foldersToExclude.join('\n');
-    }, (err) => {
-        console.error(err);
-    });
+async function restoreOptions() {
+    let settings = await SpeedkeySettings.GetSettings();
 
+    document.querySelector("#include-bookmarks").checked = settings.includeBookmarks;
+    document.querySelector("#include-top-sites").checked = settings.includeTopSites;
+    document.querySelector("#include-open-tabs").checked = settings.includeOpenTabs;
+    document.querySelector("#switch-to-existing-tab").checked = settings.switchToExistingTab;
+    document.querySelector("#dark-overlay").checked = settings.darkOverlay;
+    document.querySelector("#folders-to-exclude").value = settings.foldersToExclude.join('\n');
+    
     document.querySelector('#container').style.display = 'block'
 }
 

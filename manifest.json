@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "SpeedKey",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "description": "Hotkey based speed dial launcher.",
     "icons": {
         "12": "assets/icons/icon12.png",
@@ -27,6 +27,7 @@
                 "lib/vue.js",
                 "src/js/debounce.js",
                 "src/js/constants.js",
+                "src/js/settings.js",
                 "src/js/content-script.js"
             ],
             "css": [
@@ -46,11 +47,11 @@
         "page": "src/html/options.html"
     },
     "commands": {
-        "open-launcher": {
+        "toggle-launcher": {
             "suggested_key": {
                 "default": "Ctrl+Space"
             },
-            "description": "Open the launcher."
+            "description": "Open/close the launcher."
         }
     },
     "permissions": [

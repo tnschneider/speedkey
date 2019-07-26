@@ -4,13 +4,14 @@ class SpeedkeyBackground {
         this.fuse = null;
         this.bookmarkResults = [];
         this.topSitesResults = [];
+        this.openTabsResults = [];
     }
 
-    async load(reloadSettings, reloadBookmarks, reloadTopSites) {
+    async load(reloadSettings, reloadBookmarks, reloadTopSites, reloadOpenTabs) {
         console.info('loading...');
 
         if (reloadSettings) {
-            this.settings = new SpeedkeySettings(await browser.storage.local.get());
+            this.settings = await SpeedkeySettings.GetSettings();
         }
 
         if (reloadBookmarks && this.settings.includeBookmarks) {
@@ -35,9 +36,24 @@ class SpeedkeyBackground {
             this.topSitesResults = [];
         }
 
+        if (reloadOpenTabs && this.settings.includeOpenTabs) {
+            console.info("reloading open tabs...");
+            this.openTabsResults = (await browser.tabs.query({
+                currentWindow: true,
+                active: false
+            })).map(x => ({
+                display: x.title || x.url,
+                value: x.id,
+                resultType: SPEEDKEY.RESULT_TYPES.OPEN_TAB
+            }));
+        } else if (!this.settings.includeOpenTabs) {
+            this.openTabsResults = [];
+        }
+
         this.fuse = new Fuse([
             ...this.bookmarkResults,
-            ...this.topSitesResults
+            ...this.topSitesResults,
+            ...this.openTabsResults
         ], {
             shouldSort: true,
             threshold: 0.6,
@@ -60,23 +76,33 @@ class SpeedkeyBackground {
         let results = this.fuse.search(searchValue).slice(0, 10);
 
         if (this.isUrl(searchValue)) {
-            results.unshift({ display: "Go To", value: SPEEDKEY.RESULT_TYPES.GOTO, resultType: SPEEDKEY.RESULT_TYPES.GOTO });
+            results.unshift({ display: "Go To", value: searchValue, resultType: SPEEDKEY.RESULT_TYPES.GOTO });
         } 
         
-        results.push({ display: "Search", value: SPEEDKEY.RESULT_TYPES.SEARCH, resultType: SPEEDKEY.RESULT_TYPES.SEARCH });
+        results.push({ display: "Search", value: searchValue, resultType: SPEEDKEY.RESULT_TYPES.SEARCH });
 
         return results;
     }
 
-    async navigate(to, isGoto) {
-        if (isGoto) {
-            if (this.needsSchema(to)) {
-                to = `http://${to}`;
-            }
+    async navigate(to, type) {
+        if (type === SPEEDKEY.RESULT_TYPES.OPEN_TAB) {
+            this.goToTab(to);
+            return;
+        }
 
-            if (this.needsTrailingSlash(to)) {
-                to += '/';
+        if (type === SPEEDKEY.RESULT_TYPES.SEARCH) {
+            this.search(to);
+            return;
+        }
+
+        if (type === SPEEDKEY.RESULT_TYPES.GOTO) {
+            if (this.needsSchema(to)) {
+                to = `https://${to}`;
             }
+        }
+
+        if (this.needsTrailingSlash(to)) {
+            to += '/';
         }
 
         if (this.settings.switchToExistingTab) {
@@ -87,27 +113,33 @@ class SpeedkeyBackground {
                 });
                 
                 if (tabs && tabs.length > 0) {
-                    browser.tabs.update(tabs[0].id, {
-                        active: true
-                    })
+                    this.goToTab(tabs[0].id);
                 } else {
-                    browser.tabs.create({
-                        url: to
-                    });
+                    this.newTab(to);
                 }
             } catch (err) {
                 console.error(err);
             }
         } else {
-            browser.tabs.create({
-                url: to
-            });
+            this.newTab(to);
         }
     }
 
     search(val) {
         browser.search.search({
             query: val
+        });
+    }
+
+    goToTab(id) {
+        browser.tabs.update(id, {
+            active: true
+        });
+    }
+
+    newTab(to) {
+        browser.tabs.create({
+            url: to
         });
     }
 
@@ -160,9 +192,9 @@ class SpeedkeyBackground {
         browser.commands.onCommand.addListener((command) => {
             try {
                 switch (command) {
-                    case SPEEDKEY.COMMANDS.OPEN_LAUNCHER:
+                    case SPEEDKEY.COMMANDS.TOGGLE_LAUNCHER:
                         this.sendMessageToActiveTab({
-                            action: SPEEDKEY.ACTIONS.OPEN
+                            action: SPEEDKEY.ACTIONS.TOGGLE
                         });
                         break;
                 }
@@ -181,10 +213,7 @@ class SpeedkeyBackground {
                         });
                         break;
                     case SPEEDKEY.ACTIONS.NAVIGATE:
-                        this.navigate(request.payload, request.isGoto);
-                        break;
-                    case SPEEDKEY.ACTIONS.SEARCH:
-                        this.search(request.payload);
+                        this.navigate(request.payload, request.resultType);
                         break;
                 }
             } catch (err) {
@@ -193,11 +222,21 @@ class SpeedkeyBackground {
             
         });
 
-        browser.bookmarks.onCreated.addListener(() => this.load(false, true, false));
-        browser.bookmarks.onRemoved.addListener(() => this.load(false, true, false));
-        browser.bookmarks.onChanged.addListener(() => this.load(false, true, false));
-        browser.bookmarks.onMoved.addListener(() => this.load(false, true, false));
-        browser.storage.onChanged.addListener(() => this.load(true, true, true));
+        //settings
+        browser.storage.onChanged.addListener(() => this.load(true, true, true, true));
+        
+        //bookmarks
+        browser.bookmarks.onCreated.addListener(() => this.load(false, true, false, false));
+        browser.bookmarks.onRemoved.addListener(() => this.load(false, true, false, false));
+        browser.bookmarks.onChanged.addListener(() => this.load(false, true, false, false));
+        browser.bookmarks.onMoved.addListener(() => this.load(false, true, false, false));
+
+        //tabs
+        browser.tabs.onActivated.addListener(() => this.load(false, false, false, true));
+        browser.tabs.onAttached.addListener(() => this.load(false, false, false, true));
+        browser.tabs.onCreated.addListener(() => this.load(false, false, false, true));
+        browser.tabs.onDetached.addListener(() => this.load(false, false, false, true));
+        browser.tabs.onUpdated.addListener(() => this.load(false, false, false, true));
     }
 }
 

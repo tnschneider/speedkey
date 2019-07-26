@@ -1,4 +1,4 @@
-(function() {
+(async function() {
     const SPEEDKEY_CONTAINER_ELEMENT_ID = "speedkey-launcher-container";
 
     let existingContainer = document.getElementById(SPEEDKEY_CONTAINER_ELEMENT_ID);
@@ -15,14 +15,16 @@
         [SPEEDKEY.RESULT_TYPES.SEARCH]: browser.runtime.getURL("assets/icons/search.svg"),
         [SPEEDKEY.RESULT_TYPES.TOP_SITE]: browser.runtime.getURL("assets/icons/whatshot.svg"),
         [SPEEDKEY.RESULT_TYPES.GOTO]: browser.runtime.getURL("assets/icons/arrow_forward.svg"),
+        [SPEEDKEY.RESULT_TYPES.OPEN_TAB]: browser.runtime.getURL("assets/icons/tab.svg"),
     }
 
     new Vue({
         template: `
-            <div class="speedkey-launcher-container">
+            <div class="speedkey-launcher-container" id="speedkey-launcher-container">
             <transition name="fade">
             <div v-if="visible" 
                 class="speedkey-launcher-overlay"
+                :class="{ 'speedkey-launcher-overlay': true, 'dark-overlay': settings.darkOverlay }"
                 @click.self="hide"
                 @keyup.enter="onEnter"
                 @keyup.escape="onEscape"
@@ -54,7 +56,8 @@
             searchValue: null,
             visible: false,
             highlightedResult: 0,
-            results: []
+            results: [],
+            settings: {}
         },
         computed: {
             numResults() {
@@ -67,25 +70,18 @@
 
                 let selected = this.results[index];
 
-                if (!selected || selected.resultType === SPEEDKEY.RESULT_TYPES.SEARCH) {
-                    if (this.searchValue) {
-                        browser.runtime.sendMessage({
-                            action: SPEEDKEY.ACTIONS.SEARCH,
-                            payload: this.searchValue
-                        });
+                if (!selected) {
+                    selected = {
+                        value: this.searchValue,
+                        resultType: SPEEDKEY.RESULT_TYPES.SEARCH
                     }
-                } else if (selected.resultType === SPEEDKEY.RESULT_TYPES.GOTO) {
-                    browser.runtime.sendMessage({
-                        action: SPEEDKEY.ACTIONS.NAVIGATE,
-                        payload: this.searchValue,
-                        isGoto: true
-                    });
-                } else {
-                    browser.runtime.sendMessage({
-                        action: SPEEDKEY.ACTIONS.NAVIGATE,
-                        payload: selected.value
-                    });
                 }
+
+                browser.runtime.sendMessage({
+                    action: SPEEDKEY.ACTIONS.NAVIGATE,
+                    payload: selected.value,
+                    resultType: selected.resultType
+                });
 
                 this.hide();
             },
@@ -122,11 +118,19 @@
                 this.hide();
             },
             onDown() {
-                if (this.highlightedResult < this.numResults - 1) this.highlightedResult++;
+                if (this.highlightedResult < this.numResults - 1) {
+                    this.highlightedResult++;
+                } else {
+                    this.highlightedResult = 0;
+                }
                 this.scrollResultIntoView();
             },
             onUp() {
-                if (this.highlightedResult > 0) this.highlightedResult--;
+                if (this.highlightedResult > 0) {
+                    this.highlightedResult--;
+                } else {
+                    this.highlightedResult = this.numResults > 0 ? this.numResults - 1 : 0;
+                }
                 this.scrollResultIntoView();
             },
             onPageDown() {
@@ -142,6 +146,9 @@
                     block: "nearest",
                     inline: "nearest"
                 })
+            },
+            async loadSettings() {
+                this.settings = await SpeedkeySettings.GetSettings();
             }
         },
         watch: {
@@ -153,11 +160,19 @@
                 }
             }
         },
-        mounted() {
+        async mounted() {
+            await this.loadSettings();
+
+            browser.storage.onChanged.addListener(() => this.loadSettings());
+            
             browser.runtime.onMessage.addListener((message) => {
                 switch (message.action) {
-                    case SPEEDKEY.ACTIONS.OPEN:
-                        this.show();
+                    case SPEEDKEY.ACTIONS.TOGGLE:
+                        if (this.visible) {
+                            this.hide();
+                        } else {
+                            this.show();
+                        }
                         break;
                 }
             });

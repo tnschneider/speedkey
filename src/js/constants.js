@@ -1,12 +1,11 @@
 const SPEEDKEY = {
     ACTIONS: {
-        OPEN: "open",
+        TOGGLE: "toggle",
         FILTER: "filter",
-        NAVIGATE: "navigate",
-        SEARCH: "search"
+        NAVIGATE: "navigate"
     },
     COMMANDS: {
-        OPEN_LAUNCHER: "open-launcher"
+        TOGGLE_LAUNCHER: "toggle-launcher"
     },
     REGEXES: {
         URL: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
@@ -17,6 +16,7 @@ const SPEEDKEY = {
         GOTO: "goto",
         SEARCH: "search",
         BOOKMARK: "bookmark",
-        TOP_SITE: "top-site"
+        TOP_SITE: "top-site",
+        OPEN_TAB: "open-tab"
     }
 }
