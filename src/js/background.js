@@ -36,7 +36,10 @@ class SpeedkeyBackground {
             this.openTabsResults = (await browser.tabs.query({}))
                 .map(x => ({
                     display: x.title || x.url,
-                    value: x.id,
+                    value: {
+                        id: x.id,
+                        windowId: x.windowId
+                    },
                     resultType: SPEEDKEY.RESULT_TYPES.OPEN_TAB
                 }));
         } else if (!this.settings.includeOpenTabs) {
@@ -80,43 +83,43 @@ class SpeedkeyBackground {
         return results;
     }
 
-    async navigate(to, type) {
+    async navigate(value, type) {
         if (type === SPEEDKEY.RESULT_TYPES.OPEN_TAB) {
-            this.goToTab(to);
+            this.goToTab(value.id, value.windowId);
             return;
         }
 
         if (type === SPEEDKEY.RESULT_TYPES.SEARCH) {
-            this.search(to);
+            this.search(value);
             return;
         }
 
         if (type === SPEEDKEY.RESULT_TYPES.GOTO) {
-            if (this.needsSchema(to)) {
-                to = `https://${to}`;
+            if (this.needsSchema(value)) {
+                value = `https://${value}`;
             }
         }
 
-        if (this.needsTrailingSlash(to)) {
-            to += '/';
+        if (this.needsTrailingSlash(value)) {
+            value += '/';
         }
 
         if (this.settings.switchToExistingTab) {
             try {
                 let tabs = await browser.tabs.query({
-                    url: `${to}*`
+                    url: `${value}*`
                 });
                 
                 if (tabs && tabs.length > 0) {
-                    this.goToTab(tabs[0].id);
+                    this.goToTab(tabs[0].id, tabs[0].windowId);
                 } else {
-                    this.newTab(to);
+                    this.newTab(value);
                 }
             } catch (err) {
                 console.error(err);
             }
         } else {
-            this.newTab(to);
+            this.newTab(value);
         }
     }
 
@@ -126,15 +129,21 @@ class SpeedkeyBackground {
         });
     }
 
-    goToTab(id) {
+    async goToTab(id, windowId) {
+        if (windowId) {
+            browser.windows.update(windowId, {
+                focused: true
+            });
+        }
+
         browser.tabs.update(id, {
             active: true
         });
     }
 
-    newTab(to) {
+    newTab(url) {
         browser.tabs.create({
-            url: to
+            url: url
         });
     }
 
