@@ -65,7 +65,7 @@ class SpeedkeyBackground {
     }
 
     removeTab(tabId) {
-        this.openTabsResults = this.openTabsResults.filter(x => x.value !== tabId);
+        this.openTabsResults = this.openTabsResults.filter(x => x.value.id !== tabId);
         this.load(false, false, false, false);
     }
 
@@ -147,19 +147,6 @@ class SpeedkeyBackground {
         });
     }
 
-    async sendMessageToActiveTab(message) {
-        try {
-            let tabs = await browser.tabs.query({
-                currentWindow: true,
-                active: true
-            });
-            
-            browser.tabs.sendMessage(tabs[0].id, message);
-        } catch (err) {
-            console.error(err);
-        }   
-    }
-
     isUrl(val) {
         return SPEEDKEY.REGEXES.URL.test(val);
     }
@@ -193,21 +180,6 @@ class SpeedkeyBackground {
     async init() {
         await this.load(true, true, true, true);
 
-        browser.commands.onCommand.addListener((command) => {
-            try {
-                switch (command) {
-                    case SPEEDKEY.COMMANDS.TOGGLE_LAUNCHER:
-                        this.sendMessageToActiveTab({
-                            action: SPEEDKEY.ACTIONS.TOGGLE
-                        });
-                        break;
-                }
-            } catch (err) {
-                console.error(err);
-            }
-            
-        });
-
         browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
             try {
                 switch (request.action) {
@@ -239,6 +211,10 @@ class SpeedkeyBackground {
         browser.tabs.onCreated.addListener(() => this.load(false, false, false, true));
         browser.tabs.onUpdated.addListener(() => this.load(false, false, false, true));
         browser.tabs.onRemoved.addListener((tabId) => this.removeTab(tabId));
+
+        browser.browserAction.onClicked.addListener((tab) => {
+            browser.browserAction.openPopup();
+        });
     }
 }
 
