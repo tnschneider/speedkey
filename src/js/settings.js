@@ -5,7 +5,6 @@ class SpeedkeySettings {
         this.includeOpenTabs = this.boolOrDefault(settings.includeOpenTabs, true);
         this.switchToExistingTab = this.boolOrDefault(settings.switchToExistingTab, true);
         this.darkTheme = this.boolOrDefault(settings.darkTheme, true);
-        this.darkOverlay = this.boolOrDefault(settings.darkOverlay, false);
         this.foldersToExclude = settings.foldersToExclude || [];
     }
 

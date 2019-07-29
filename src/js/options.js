@@ -6,7 +6,6 @@ function saveOptions(e) {
         includeOpenTabs: document.querySelector("#include-open-tabs").checked,
         switchToExistingTab: document.querySelector("#switch-to-existing-tab").checked,
         darkTheme: document.querySelector("#dark-theme").checked,
-        darkOverlay: document.querySelector("#dark-overlay").checked,
         foldersToExclude: (document.querySelector("#folders-to-exclude").value || '')
             .split('\n')
             .map(x => x.trim())
@@ -22,7 +21,6 @@ async function restoreOptions() {
     document.querySelector("#include-open-tabs").checked = settings.includeOpenTabs;
     document.querySelector("#switch-to-existing-tab").checked = settings.switchToExistingTab;
     document.querySelector("#dark-theme").checked = settings.darkTheme;
-    document.querySelector("#dark-overlay").checked = settings.darkOverlay;
     document.querySelector("#folders-to-exclude").value = settings.foldersToExclude.join('\n');
     
     document.querySelector('#container').style.display = 'block'
