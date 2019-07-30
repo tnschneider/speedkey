@@ -2,3 +2,4 @@ node_modules
 yarn.lock
 web-ext-artifacts/
 lib/
+manifest.json

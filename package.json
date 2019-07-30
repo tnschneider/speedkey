@@ -1,13 +1,15 @@
 {
   "scripts": {
-    "postinstall": "(test -d lib || mkdir lib) && cp ./node_modules/vue/dist/vue.js ./lib/vue.js && cp ./node_modules/fuse.js/dist/fuse.js ./lib/fuse.js",
-    "build": "web-ext build -o --ignore-files yarn.lock",
-    "sign": "web-ext sign --ignore-files yarn.lock",
-    "start": "web-ext run"
+    "postinstall": "cp -f manifest.firefox.json manifest.json && (test -d lib || mkdir lib) && cp ./node_modules/vue/dist/vue.js ./lib/vue.js && cp ./node_modules/fuse.js/dist/fuse.js ./lib/fuse.js && cp ./node_modules/webextension-polyfill/dist/browser-polyfill.js ./lib/browser-polyfill.js",
+    "build": "cp -f manifest.firefox.json manifest.json && web-ext build -o --ignore-files yarn.lock",
+    "build-chrome": "cp -f manifest.chrome.json manifest.json && web-ext build -o --ignore-files yarn.lock",
+    "sign": "cp -f manifest.firefox.json manifest.json && web-ext sign --ignore-files yarn.lock",
+    "start": "cp -f manifest.firefox.json manifest.json && web-ext run"
   },
   "dependencies": {
     "fuse.js": "3.4.5",
     "vue": "2.6.10",
-    "web-ext": "3.1.1"
+    "web-ext": "3.1.1",
+    "webextension-polyfill": "0.4.0"
   }
 }

@@ -124,9 +124,15 @@ class SpeedkeyBackground {
     }
 
     search(val) {
-        browser.search.search({
-            query: val
-        });
+        if (browser.search) {
+            browser.search.search({
+                query: val
+            });
+        } else {
+            var url = `https://www.google.com/search?q=${encodeURI(val)}`
+            this.newTab(url);
+        }
+        
     }
 
     async goToTab(id, windowId) {

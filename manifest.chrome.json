@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "SpeedKey",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": " Hotkey based speed dial launcher for your bookmarks and more.",
     "author": "Terry Schneider",
     "icons": {
@@ -13,11 +13,6 @@
         "128": "assets/icons/icon128.png",
         "256": "assets/icons/icon256.png",
         "512": "assets/icons/icon512.png"
-    },
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "{53d40c16-38d4-4454-bf17-bc88a10151b2}"
-        }
     },
     "browser_action": {
         "browser_style": false,
@@ -32,6 +27,7 @@
     "web_accessible_resources": ["assets/icons/*.svg"],
     "background": {
         "scripts": [
+            "lib/browser-polyfill.js",
             "lib/fuse.js",
             "src/js/constants.js",
             "src/js/settings.js",
@@ -53,7 +49,6 @@
         "topSites",
         "bookmarks",
         "tabs",
-        "search",
         "activeTab",
         "storage"
     ]
