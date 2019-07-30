@@ -55,6 +55,8 @@
         "tabs",
         "search",
         "activeTab",
-        "storage"
+        "storage",
+        "cookies",
+        "contextualIdentities"
     ]
 }

@@ -61,7 +61,16 @@
                                     'highlighted': this.highlightedResult === index
                                 }
                             }, [
-                                createElement('div', {}, [result.display]),
+                                createElement('div', {}, [
+                                    ...(result.value.identity ? [
+                                        createElement('span', {
+                                            style: {
+                                                color: result.value.identity.colorCode
+                                            }
+                                        }, [`[${result.value.identity.name}] `])
+                                    ] : []),
+                                    result.display
+                                ]),
                                 createElement('img', {
                                     attrs: {
                                         src: this.getResultIconSrc(result)

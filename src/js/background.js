@@ -2,14 +2,33 @@ class SpeedkeyBackground {
     constructor() {
         this.settings = {};
         this.fuse = null;
+        this.identities = [];
         this.bookmarkResults = [];
         this.topSitesResults = [];
         this.openTabsResults = [];
     }
 
-    async load(reloadSettings, reloadBookmarks, reloadTopSites, reloadOpenTabs) {
+    async load({ reloadSettings, reloadBookmarks, reloadTopSites, reloadOpenTabs, reloadIdentities, reloadAll }) {
+        if (reloadAll) {
+            reloadSettings 
+            = reloadBookmarks 
+            = reloadTopSites
+            = reloadOpenTabs
+            = reloadIdentities
+            = true;
+        }
+
         if (reloadSettings) {
             this.settings = await SpeedkeySettings.GetSettings();
+        }
+
+        if (reloadIdentities && browser.contextualIdentities) {
+            try {
+                this.identities = await browser.contextualIdentities.query({});
+            } catch (e) {
+                this.identities = [];
+                console.error(e);
+            }
         }
 
         if (reloadBookmarks && this.settings.includeBookmarks) {
@@ -38,7 +57,8 @@ class SpeedkeyBackground {
                     display: x.title || x.url,
                     value: {
                         id: x.id,
-                        windowId: x.windowId
+                        windowId: x.windowId,
+                        identity: this.identities.find(y => y.cookieStoreId === x.cookieStoreId)
                     },
                     resultType: SPEEDKEY.RESULT_TYPES.OPEN_TAB
                 }));
@@ -66,7 +86,7 @@ class SpeedkeyBackground {
 
     removeTab(tabId) {
         this.openTabsResults = this.openTabsResults.filter(x => x.value.id !== tabId);
-        this.load(false, false, false, false);
+        this.load();
     }
 
     filter(searchValue) {
@@ -178,7 +198,7 @@ class SpeedkeyBackground {
     }
 
     async init() {
-        await this.load(true, true, true, true);
+        await this.load({ reloadAll: true });
 
         browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
             try {
@@ -199,22 +219,23 @@ class SpeedkeyBackground {
         });
 
         //settings
-        browser.storage.onChanged.addListener(() => this.load(true, true, true, true));
+        browser.storage.onChanged.addListener(() => this.load({ reloadAll: true }));
         
         //bookmarks
-        browser.bookmarks.onCreated.addListener(() => this.load(false, true, false, false));
-        browser.bookmarks.onRemoved.addListener(() => this.load(false, true, false, false));
-        browser.bookmarks.onChanged.addListener(() => this.load(false, true, false, false));
-        browser.bookmarks.onMoved.addListener(() => this.load(false, true, false, false));
+        browser.bookmarks.onCreated.addListener(() => this.load({ reloadBookmarks: true }));
+        browser.bookmarks.onRemoved.addListener(() => this.load({ reloadBookmarks: true }));
+        browser.bookmarks.onChanged.addListener(() => this.load({ reloadBookmarks: true }));
+        browser.bookmarks.onMoved.addListener(() => this.load({ reloadBookmarks: true }));
 
         //tabs
-        browser.tabs.onCreated.addListener(() => this.load(false, false, false, true));
-        browser.tabs.onUpdated.addListener(() => this.load(false, false, false, true));
+        browser.tabs.onCreated.addListener(() => this.load({ reloadOpenTabs: true }));
+        browser.tabs.onUpdated.addListener(() => this.load({ reloadOpenTabs: true }));
         browser.tabs.onRemoved.addListener((tabId) => this.removeTab(tabId));
 
-        browser.browserAction.onClicked.addListener((tab) => {
-            browser.browserAction.openPopup();
-        });
+        //identities
+        browser.contextualIdentities.onCreated.addListener(() => this.load({ reloadIdentities: true }))
+        browser.contextualIdentities.onCreated.removeListener(() => this.load({ reloadIdentities: true }))
+        browser.contextualIdentities.onCreated.hasListener(() => this.load({ reloadIdentities: true }))
     }
 }
 
