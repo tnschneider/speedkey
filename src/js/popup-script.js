@@ -115,7 +115,7 @@
                 window.close();
             },
             filter: _SPEEDKEY_debounce(function() {
-                browser.runtime.sendMessage({
+                return browser.runtime.sendMessage({
                     action: SPEEDKEY.ACTIONS.FILTER,
                     payload: this.searchValue
                 }).then((res) => {
@@ -178,15 +178,15 @@
         },
         watch: {
             searchValue(val, prev) {
-                if (!val) {
-                    this.results = [];
-                } else if (val !== prev) {
+                if (val !== prev) {
                     this.filter();
                 }
             }
         },
         async mounted() {
             await this.loadSettings();
+
+            await this.filter();
 
             Vue.nextTick(() => {
                 this.$refs.input.focus();

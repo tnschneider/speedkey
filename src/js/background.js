@@ -92,6 +92,10 @@ class SpeedkeyBackground {
     filter(searchValue) {
         if (!this.fuse) return;
 
+        if (!searchValue) {
+            return this.openTabsResults;
+        }
+
         let results = this.fuse.search(searchValue).slice(0, 10);
 
         if (this.isUrl(searchValue)) {
