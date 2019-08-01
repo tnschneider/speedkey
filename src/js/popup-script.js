@@ -119,7 +119,7 @@
                     action: SPEEDKEY.ACTIONS.FILTER,
                     payload: this.searchValue
                 }).then((res) => {
-                    this.results = res.results;
+                    this.results = res.results || [];
                     this.highlightedResult = 0;
                 });
             }, 100, false),

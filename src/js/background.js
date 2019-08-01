@@ -8,7 +8,7 @@ class SpeedkeyBackground {
         this.openTabsResults = [];
     }
 
-    async load({ reloadSettings, reloadBookmarks, reloadTopSites, reloadOpenTabs, reloadIdentities, reloadAll }) {
+    async load({ reloadSettings, reloadBookmarks, reloadTopSites, reloadOpenTabs, reloadIdentities, reloadAll } = {}) {
         if (reloadAll) {
             reloadSettings 
             = reloadBookmarks 
@@ -233,13 +233,17 @@ class SpeedkeyBackground {
 
         //tabs
         browser.tabs.onCreated.addListener(() => this.load({ reloadOpenTabs: true }));
-        browser.tabs.onUpdated.addListener(() => this.load({ reloadOpenTabs: true }));
+        browser.tabs.onUpdated.addListener((tabId, changeInfo) => { 
+            if (Object.keys(changeInfo).some(x => x === "url" || x === "title")) {
+                this.load({ reloadOpenTabs: true });
+            }
+        });
         browser.tabs.onRemoved.addListener((tabId) => this.removeTab(tabId));
 
         //identities
-        browser.contextualIdentities.onCreated.addListener(() => this.load({ reloadIdentities: true }))
-        browser.contextualIdentities.onCreated.removeListener(() => this.load({ reloadIdentities: true }))
-        browser.contextualIdentities.onCreated.hasListener(() => this.load({ reloadIdentities: true }))
+        browser.contextualIdentities.onCreated.addListener(() => this.load({ reloadIdentities: true }));
+        browser.contextualIdentities.onRemoved.addListener(() => this.load({ reloadIdentities: true }));
+        browser.contextualIdentities.onUpdated.addListener(() => this.load({ reloadIdentities: true }));
     }
 }
 

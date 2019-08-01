@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "postinstall": "(test -d lib || mkdir lib) && cp ./node_modules/vue/dist/vue.js ./lib/vue.js && cp ./node_modules/fuse.js/dist/fuse.js ./lib/fuse.js",
+    "postinstall": "(test -d lib || mkdir lib) && cp ./node_modules/vue/dist/vue.min.js ./lib/vue.min.js && cp ./node_modules/fuse.js/dist/fuse.js ./lib/fuse.js",
     "build": "web-ext build -o --ignore-files yarn.lock",
     "sign": "web-ext sign --ignore-files yarn.lock",
     "start": "web-ext run"
